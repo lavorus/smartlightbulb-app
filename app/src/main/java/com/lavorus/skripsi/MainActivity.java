@@ -33,20 +33,11 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     List<ScanResult> results;
     Handler mHandler;
 
-    private ListView mListView;
     private UsersAdapter adapter;
-    private List wifiList;
-
-    String ITEM_KEY = "key";
-    String ITEM_CAP = "capabilities";
-    String ITEM_LOCK = "lock";
-    ArrayList<HashMap<String, String>> arraylist = new ArrayList<HashMap<String, String>>();
 
     @Override
     public void onRefresh() {
-        /**
-         * This method is called when swipe refresh is pulled down
-         */
+        //This method is called when swipe refresh is pulled down
         refreshWifi();
     }
 
@@ -68,17 +59,14 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         );
 
         wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-        if (wifi.isWifiEnabled() == false)
-        {
+        if (wifi.isWifiEnabled() == false) {
             Toast.makeText(getApplicationContext(), "wifi is disabled..making it enabled", Toast.LENGTH_LONG).show();
             wifi.setWifiEnabled(true);
         }
 
-        registerReceiver(new BroadcastReceiver()
-        {
+        registerReceiver(new BroadcastReceiver()  {
             @Override
-            public void onReceive(Context c, Intent intent)
-            {
+            public void onReceive(Context c, Intent intent) {
                 results = wifi.getScanResults();
                 size = results.size();
                 swipeRefreshLayout.setRefreshing(false);
@@ -86,8 +74,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         }, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
-            requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                    1);
+            requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
             //After this point you wait for callback in onRequestPermissionsResult(int, String[], int[]) overriden method
         }else{
             mHandler = new Handler();
@@ -118,11 +105,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                                           int[] grantResults) {
-        if (requestCode == 1
-                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            // Do something with granted permission
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             mHandler = new Handler();
             mHandler.postDelayed(m_Runnable,15000);
         }
@@ -130,7 +114,6 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
@@ -139,50 +122,43 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_refresh) {
             refreshWifi();
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private final Runnable m_Runnable = new Runnable()
-    {
-        public void run()
-
-        {
+    private final Runnable m_Runnable = new Runnable() {
+        public void run() {
             refreshWifi();
-            //mHandler.postDelayed(m_Runnable, 10000);
         }
     };
 
 
     private void refreshWifi() {
-        arraylist.clear();
+        adapter.clearData();
         wifi.startScan();
 
         Toast.makeText(this, "Scanning.... " + size, Toast.LENGTH_SHORT).show();
-        try
-        {
+        try {
             size = size - 1;
-            while (size >= 0)
-            {
-                HashMap<String, String> items = new HashMap<String, String>();
-                //items.put(ITEM_KEY, results.get(size).SSID + "  " + results.get(size).capabilities);
-                items.put(ITEM_KEY, results.get(size).SSID);
-                items.put(ITEM_CAP, results.get(size).capabilities);
-                if (results.get(size).capabilities.equals("[ESS]") || results.get(size).capabilities.equals("[WPS][ESS]")) {
-                    items.put(ITEM_LOCK, "");
+            while (size >= 0) {
+                String wifiSSID = results.get(size).SSID;
+                String wifiPass = results.get(size).capabilities;
+                String wifiLock = "";
+                if (wifiPass.equals("[ESS]") || wifiPass.equals("[WPS][ESS]")) {
+                    wifiLock = "";
                 } else {
-                    items.put(ITEM_LOCK, "Lock");
+                    wifiLock = "Lock";
                 }
 
-                arraylist.add(items);
-                size--;
+                User newUser = new User(wifiSSID, wifiLock);
+                adapter.addData(newUser);
                 adapter.notifyDataSetChanged();
+                size--;
             }
         }
-        catch (Exception e)
-        { }
+        catch (Exception e) {
+        }
     }
 }
