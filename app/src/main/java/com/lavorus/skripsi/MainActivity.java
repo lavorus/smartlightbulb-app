@@ -83,16 +83,7 @@ public class MainActivity extends AppCompatActivity {
         final Button button = (Button) findViewById(R.id.button2);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
-                    requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
-                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED){
-                        requestPermissions(new String[]{Manifest.permission.INTERNET}, 2);
-                    } else {
-                        scanHost();
-                    }
-                } else {
-                    scanHost();
-                }
+                runHost();
             }
         });
 
@@ -103,6 +94,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        runHost();
+    }
+
+    private void runHost() {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
             requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED){
@@ -136,6 +131,7 @@ public class MainActivity extends AppCompatActivity {
     private void checkHosts(String subnet) {
         adapter.clearData();
         adapter.notifyDataSetChanged();
+        RequestQueue queue = Volley.newRequestQueue(this);
 
         for (int i = 1; i < 255; i++) {
             final String host = subnet + "." + i;
@@ -145,7 +141,6 @@ public class MainActivity extends AppCompatActivity {
                 socket.close();
                 Log.d("TEST", "checkHosts() :: " + host + " is reachable");
                 String url = "http://" + host + ":19105/status";
-                RequestQueue queue = Volley.newRequestQueue(this);
                 StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                     new Response.Listener<String>() {
                         @Override
@@ -171,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
                         Log.d("TEST", "Fail to Get Name ::" + host);
                     }
                 });
-                Volley.newRequestQueue(this).add(stringRequest);
+                queue.add(stringRequest);
             }
             catch(ConnectException ce){
                 Log.i("TEST", "Fail ::" + host);
@@ -196,6 +191,46 @@ public class MainActivity extends AppCompatActivity {
             Intent i = new Intent(MainActivity.this, WifiScanActivity.class);
             i.putExtra("justSkripsi", true);
             startActivityForResult(i, REQUEST_SCAN_WIFI);
+        } else if (id == R.id.action_all_on) {
+            for (int i = 0; i < adapter.getCount(); i++){
+                RequestQueue queue = Volley.newRequestQueue(this);
+                SmartLight selectedData = (SmartLight) adapter.getItem(i);
+                String url = "http://" + selectedData.ip + ":19105/setcolor?red=255&green=255&blue=255";
+                StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                        new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                                // Do Nothing
+                            }
+                        }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d("testi", "Failed");
+                    }
+                });
+                stringRequest.setTag("CHANGE");
+                queue.add(stringRequest);
+            }
+        } else if (id == R.id.action_all_off) {
+            for (int i = 0; i < adapter.getCount(); i++){
+                RequestQueue queue = Volley.newRequestQueue(this);
+                SmartLight selectedData = (SmartLight) adapter.getItem(i);
+                String url = "http://" + selectedData.ip + ":19105/setcolor?red=0&green=0&blue=0";
+                StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                        new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                                // Do Nothing
+                            }
+                        }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d("testi", "Failed");
+                    }
+                });
+                stringRequest.setTag("CHANGE");
+                queue.add(stringRequest);
+            }
         }
         return super.onOptionsItemSelected(item);
     }

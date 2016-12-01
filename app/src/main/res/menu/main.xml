@@ -2,8 +2,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/action_all_on"
+        android:orderInCategory="100"
+        android:title="All On"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_all_off"
+        android:orderInCategory="100"
+        android:title="All Off"
+        app:showAsAction="always" />
+    <item
         android:id="@+id/action_scanwifi"
         android:orderInCategory="100"
-        android:title="Cari Wifi"
+        android:title="Scan Wifi"
         app:showAsAction="always" />
 </menu>
