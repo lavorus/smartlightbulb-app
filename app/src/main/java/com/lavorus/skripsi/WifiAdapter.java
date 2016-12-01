@@ -13,15 +13,15 @@ import java.util.ArrayList;
  * Created by Alvin on 11/5/16.
  */
 
-public class UsersAdapter extends BaseAdapter {
-    private ArrayList<User> data = new ArrayList<User>();
+public class WifiAdapter extends BaseAdapter {
+    private ArrayList<Wifi> data = new ArrayList<Wifi>();
     private Activity activity;
 
-    public UsersAdapter(Activity activity){
+    public WifiAdapter(Activity activity){
         this.activity = activity;
     }
 
-    public void addData(User data){
+    public void addData(Wifi data){ 
         this.data.add(data);
     }
 
@@ -47,14 +47,17 @@ public class UsersAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = activity.getLayoutInflater();
-        View row = inflater.inflate(R.layout.item_user, parent, false);
+        View row = inflater.inflate(R.layout.item_wifi, parent, false);
 
-        User currentData = data.get(position);
+        Wifi currentData = data.get(position);
         TextView tvName = (TextView) row.findViewById(R.id.tvName);
-        TextView tvHome = (TextView) row.findViewById(R.id.tvHome);
+        TextView tvPassword = (TextView) row.findViewById(R.id.tvPassword);
         tvName.setText(currentData.name);
-        tvHome.setText(currentData.hometown);
-
+        if (currentData.ispassword) {
+            tvPassword.setVisibility(View.VISIBLE);
+        } else {
+            tvPassword.setVisibility(View.GONE);
+        }
         return row;
     }
 }

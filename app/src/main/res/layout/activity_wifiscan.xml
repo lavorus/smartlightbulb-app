@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/activity_main"
+    android:id="@+id/activity_wifi"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.lavorus.skripsi.MainActivity"
+    tools:context="com.lavorus.skripsi.WifiScanActivity"
     >
 
-    <ListView
-        android:id="@+id/bulb_listview"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent">
-    </ListView>
-
     <Button
-        android:text="Tambah SmartLight"
+        android:text="Scan Wifi"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/button2" />
+        android:id="@+id/button" />
+
+    <ListView
+        android:id="@+id/wifi_list_view"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent">
+    </ListView>
 </LinearLayout>
