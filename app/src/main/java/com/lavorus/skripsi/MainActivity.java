@@ -2,6 +2,7 @@ package com.lavorus.skripsi;
 
 import android.Manifest;
 import android.app.Application;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -48,14 +49,16 @@ public class MainActivity extends AppCompatActivity {
     private final int REQUEST_SCAN_WIFI = 1910;
     private WifiManager wifi;
     private SmartLightAdapter adapter;
-    private int timeout = 10;
+    private final int timeout = 3000;
     private static final int TIME_INTERVAL = 2000;
     private long mBackPressed;
+    private RequestQueue queue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        queue = Volley.newRequestQueue(this);
 
         final ListView listView = (ListView) findViewById(R.id.bulb_listview);
         adapter = new SmartLightAdapter(this);
@@ -131,49 +134,52 @@ public class MainActivity extends AppCompatActivity {
     private void checkHosts(String subnet) {
         adapter.clearData();
         adapter.notifyDataSetChanged();
-        RequestQueue queue = Volley.newRequestQueue(this);
 
         for (int i = 1; i < 255; i++) {
             final String host = subnet + "." + i;
-            try {
-                Socket socket = new Socket();
-                socket.connect(new InetSocketAddress(host, 19105), timeout);
-                socket.close();
-                Log.d("TEST", "checkHosts() :: " + host + " is reachable");
-                String url = "http://" + host + ":19105/status";
-                StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                    new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            try {
-                                JSONObject mainObject = new JSONObject(response);
-                                String tmpName = mainObject.getString("name");
-                                int tmpRed = mainObject.getInt("red");
-                                int tmpGreen = mainObject.getInt("green");
-                                int tmpBlue = mainObject.getInt("blue");
-                                Log.d("TESTI", tmpName);
+            new Thread(new Runnable() {
+                public void run() {
+                    try {
+                        Socket socket = new Socket();
+                        socket.connect(new InetSocketAddress(host, 19105), timeout);
+                        socket.close();
+                        Log.d("TEST", "checkHosts() :: " + host + " is reachable");
+                        String url = "http://" + host + ":19105/status";
+                        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                                new Response.Listener<String>() {
+                                    @Override
+                                    public void onResponse(String response) {
+                                        try {
+                                            JSONObject mainObject = new JSONObject(response);
+                                            String tmpName = mainObject.getString("name");
+                                            int tmpRed = mainObject.getInt("red");
+                                            int tmpGreen = mainObject.getInt("green");
+                                            int tmpBlue = mainObject.getInt("blue");
+                                            Log.d("TESTI", tmpName);
 
-                                SmartLight newBulb = new SmartLight(tmpName, host, tmpRed, tmpGreen, tmpBlue);
-                                adapter.addData(newBulb);
-                                adapter.notifyDataSetChanged();
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
+                                            SmartLight newBulb = new SmartLight(tmpName, host, tmpRed, tmpGreen, tmpBlue);
+                                            adapter.addData(newBulb);
+                                            adapter.notifyDataSetChanged();
+                                        } catch (Exception ex) {
+                                            ex.printStackTrace();
+                                        }
+                                    }
+                                }, new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                Log.d("TEST", "Fail to Get Name ::" + host);
                             }
-                        }
-                    }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.d("TEST", "Fail to Get Name ::" + host);
+                        });
+                        queue.add(stringRequest);
                     }
-                });
-                queue.add(stringRequest);
-            }
-            catch(ConnectException ce){
-                Log.i("TEST", "Fail ::" + host);
-            }
-            catch (Exception ex) {
-                //ex.printStackTrace();
-            }
+                    catch(ConnectException ce){
+                        Log.i("TEST", "Fail ::" + host);
+                    }
+                    catch (Exception ex) {
+                        //ex.printStackTrace();
+                    }
+                }
+            }).start();
         }
     }
 
@@ -193,7 +199,6 @@ public class MainActivity extends AppCompatActivity {
             startActivityForResult(i, REQUEST_SCAN_WIFI);
         } else if (id == R.id.action_all_on) {
             for (int i = 0; i < adapter.getCount(); i++){
-                RequestQueue queue = Volley.newRequestQueue(this);
                 SmartLight selectedData = (SmartLight) adapter.getItem(i);
                 String url = "http://" + selectedData.ip + ":19105/setcolor?red=255&green=255&blue=255";
                 StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
@@ -213,7 +218,6 @@ public class MainActivity extends AppCompatActivity {
             }
         } else if (id == R.id.action_all_off) {
             for (int i = 0; i < adapter.getCount(); i++){
-                RequestQueue queue = Volley.newRequestQueue(this);
                 SmartLight selectedData = (SmartLight) adapter.getItem(i);
                 String url = "http://" + selectedData.ip + ":19105/setcolor?red=0&green=0&blue=0";
                 StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
