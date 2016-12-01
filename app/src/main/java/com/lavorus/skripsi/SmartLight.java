@@ -7,11 +7,15 @@ package com.lavorus.skripsi;
 public class SmartLight {
     public String name;
     public String ip;
-    public String lastcondition;
+    public int red;
+    public int green;
+    public int blue;
 
-    public SmartLight(String name, String ip, String lastcondition) {
+    public SmartLight(String name, String ip, int red, int green, int blue) {
         this.name = name;
         this.ip = ip;
-        this.lastcondition = lastcondition;
+        this.red = red;
+        this.green = green;
+        this.blue = blue;
     }
 }

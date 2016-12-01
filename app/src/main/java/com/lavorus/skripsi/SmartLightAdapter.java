@@ -57,10 +57,17 @@ public class SmartLightAdapter extends BaseAdapter {
         TextView tvName = (TextView) row.findViewById(R.id.tvName);
         TextView tvCondition = (TextView) row.findViewById(R.id.tvCondition);
         tvName.setText(currentData.name);
-        if (currentData.lastcondition == "") {
+        if (currentData.red == 0 && currentData.green == 0  && currentData.blue == 0) {
             tvCondition.setText("Off");
+        } else if (currentData.red == 255 && currentData.green == 255  && currentData.blue == 255) {
+            tvCondition.setText("On");
         } else {
-            tvCondition.setText("Colour : #" + currentData.lastcondition);
+            long total = currentData.red * 256 * 256 + currentData.green * 256 + currentData.blue * 1;
+            String tmp = Long.toString(total, 16);
+            for (int i = tmp.length(); i < 6; i++) {
+                tmp = "0" + tmp;
+            }
+            tvCondition.setText("Colour : #" + tmp);
         }
         return row;
     }

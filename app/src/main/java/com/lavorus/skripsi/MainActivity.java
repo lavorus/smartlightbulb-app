@@ -21,6 +21,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -30,6 +31,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.ConnectException;
@@ -43,8 +46,9 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private final int REQUEST_SCAN_WIFI = 1910;
-
+    private WifiManager wifi;
     private SmartLightAdapter adapter;
+    private int timeout = 10;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +63,28 @@ public class MainActivity extends AppCompatActivity {
                 SmartLight selectedData = (SmartLight) adapter.getItem(position);
                 Toast.makeText(MainActivity.this, selectedData.name, Toast.LENGTH_SHORT).show();
                 Log.d("TEST", selectedData.name);
+            }
+        });
+
+        wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+        if (wifi.isWifiEnabled() == false) {
+            Toast.makeText(getApplicationContext(), "Waiting Wifi Ready", Toast.LENGTH_LONG).show();
+            wifi.setWifiEnabled(true);
+        }
+
+        final Button button = (Button) findViewById(R.id.button2);
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+                    requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED){
+                        requestPermissions(new String[]{Manifest.permission.INTERNET}, 2);
+                    } else {
+                        scanHost();
+                    }
+                } else {
+                    scanHost();
+                }
             }
         });
 
@@ -100,26 +126,35 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkHosts(String subnet) {
-        int timeout = 10;
-        for (int i=1;i<255;i++) {
+        adapter.clearData();
+
+        for (int i = 1; i < 255; i++) {
             final String host = subnet + "." + i;
-            //Log.i("TEST", host);
             try {
                 Socket socket = new Socket();
                 socket.connect(new InetSocketAddress(host, 19105), timeout);
                 socket.close();
                 Log.d("TEST", "checkHosts() :: " + host + " is reachable");
-                String url = "http://" + host + ":19105/name";
-                Log.d("TEST", url);
+                String url = "http://" + host + ":19105/status";
                 RequestQueue queue = Volley.newRequestQueue(this);
                 StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-                            Log.d("TEST", response);
-                            SmartLight newBulb = new SmartLight(response, host, "");
-                            adapter.addData(newBulb);
-                            adapter.notifyDataSetChanged();
+                            try {
+                                JSONObject mainObject = new JSONObject(response);
+                                String tmpName = mainObject.getString("name");
+                                int tmpRed = mainObject.getInt("red");
+                                int tmpGreen = mainObject.getInt("green");
+                                int tmpBlue = mainObject.getInt("blue");
+                                Log.d("TESTI", tmpName);
+
+                                SmartLight newBulb = new SmartLight(tmpName, host, tmpRed, tmpGreen, tmpBlue);
+                                adapter.addData(newBulb);
+                                adapter.notifyDataSetChanged();
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
                         }
                     }, new Response.ErrorListener() {
                     @Override
@@ -133,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.i("TEST", "Fail ::" + host);
             }
             catch (Exception ex) {
-                ex.printStackTrace();
+                //ex.printStackTrace();
             }
         }
     }
@@ -158,10 +193,10 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK && requestCode == REQUEST_SCAN_WIFI) {
-            String name = data.getExtras().getString("name");
-            Toast.makeText(this, name, Toast.LENGTH_SHORT).show();
-        }
+//        if (resultCode == RESULT_OK && requestCode == REQUEST_SCAN_WIFI) {
+//            String name = data.getExtras().getString("name");
+//            Toast.makeText(this, name, Toast.LENGTH_SHORT).show();
+//        }
     }
 
     @Override

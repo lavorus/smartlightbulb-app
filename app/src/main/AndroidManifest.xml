@@ -23,6 +23,8 @@
 
         <activity android:name=".WifiScanActivity">
         </activity>
+        <activity android:name=".WifiSetupActivity">
+        </activity>
     </application>
 
 </manifest>

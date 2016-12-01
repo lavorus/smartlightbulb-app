@@ -24,6 +24,7 @@ import android.widget.Toast;
 import java.util.List;
 
 public class WifiScanActivity extends AppCompatActivity {
+    private final int REQUEST_SETUP = 1995;
 
     WifiManager wifi;
     int size = 0;
@@ -36,6 +37,7 @@ public class WifiScanActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTitle("Cari Node Wifi");
         setContentView(R.layout.activity_wifiscan);
 
         Intent intent = getIntent();
@@ -76,10 +78,15 @@ public class WifiScanActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Wifi selectedData = (Wifi) adapter.getItem(position);
 
-                Intent data = new Intent();
-                data.putExtra("name", selectedData.name);
-                setResult(RESULT_OK, data);
+                Intent i = new Intent(WifiScanActivity.this, WifiSetupActivity.class);
+                i.putExtra("ssid", selectedData.name);
+                startActivity(i);
                 finish();
+
+//                Intent data = new Intent();
+//                data.putExtra("name", selectedData.name);
+//                setResult(RESULT_OK, data);
+//                finish();
             }
         });
 
