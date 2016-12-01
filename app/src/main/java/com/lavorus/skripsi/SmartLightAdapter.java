@@ -67,7 +67,7 @@ public class SmartLightAdapter extends BaseAdapter {
             for (int i = tmp.length(); i < 6; i++) {
                 tmp = "0" + tmp;
             }
-            tvCondition.setText("Colour : #" + tmp);
+            tvCondition.setText("Color : #" + tmp);
         }
         return row;
     }

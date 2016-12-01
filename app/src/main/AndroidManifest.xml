@@ -25,6 +25,8 @@
         </activity>
         <activity android:name=".WifiSetupActivity">
         </activity>
+        <activity android:name=".LightColorActivity">
+        </activity>
     </application>
 
 </manifest>

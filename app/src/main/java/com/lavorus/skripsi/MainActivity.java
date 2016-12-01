@@ -49,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
     private WifiManager wifi;
     private SmartLightAdapter adapter;
     private int timeout = 10;
+    private static final int TIME_INTERVAL = 2000;
+    private long mBackPressed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,8 +63,14 @@ public class MainActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 SmartLight selectedData = (SmartLight) adapter.getItem(position);
-                Toast.makeText(MainActivity.this, selectedData.name, Toast.LENGTH_SHORT).show();
-                Log.d("TEST", selectedData.name);
+//                Toast.makeText(MainActivity.this, selectedData.name, Toast.LENGTH_SHORT).show();
+//                Log.d("TEST", selectedData.name);
+
+                Intent i = new Intent(MainActivity.this, LightColorActivity.class);
+                i.putExtra("name", selectedData.name);
+                i.putExtra("host", selectedData.ip);
+                i.putExtra("total", selectedData.red * 256 * 256 + selectedData.green * 256 + selectedData.blue * 1);
+                startActivity(i);
             }
         });
 
@@ -127,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void checkHosts(String subnet) {
         adapter.clearData();
+        adapter.notifyDataSetChanged();
 
         for (int i = 1; i < 255; i++) {
             final String host = subnet + "." + i;
@@ -207,5 +216,17 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             scanHost();
         }
+
+    }
+    @Override
+    public void onBackPressed() {
+        if (mBackPressed + TIME_INTERVAL > System.currentTimeMillis()) {
+            super.onBackPressed();
+            return;
+        } else {
+            Toast.makeText(MainActivity.this, "Tekan lagi untuk keluar", Toast.LENGTH_SHORT).show();
+        }
+
+        mBackPressed = System.currentTimeMillis();
     }
 }
