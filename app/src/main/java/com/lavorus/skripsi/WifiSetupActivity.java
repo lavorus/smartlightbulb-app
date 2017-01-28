@@ -1,39 +1,39 @@
+/*
+ * Smart Light Bulb - Android App
+ * GNU GPLv3 License
+ *
+ * created 01 September 2016
+ * modified 27 January 2017
+ * by Alvin Leonardo (alvin@lavorus.com)
+ */
+
+/*
+ * Smart Light Bulb - Android App
+ * GNU GPLv3 License
+ *
+ * created 01 September 2016
+ * modified 27 January 2017
+ * by Alvin Leonardo (alvin@lavorus.com)
+ */
+
 package com.lavorus.skripsi;
 
-import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.wifi.WifiConfiguration;
-import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-
-import org.json.JSONObject;
-
-import java.net.ConnectException;
-import java.net.InetSocketAddress;
-import java.net.Socket;
 
 public class WifiSetupActivity extends AppCompatActivity {
     private int lastWifiID;

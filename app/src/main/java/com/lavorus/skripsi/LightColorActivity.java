@@ -1,16 +1,30 @@
+/*
+ * Smart Light Bulb - Android App
+ * GNU GPLv3 License
+ *
+ * created 01 September 2016
+ * modified 27 January 2017
+ * by Alvin Leonardo (alvin@lavorus.com)
+ */
+
+/*
+ * Smart Light Bulb - Android App
+ * GNU GPLv3 License
+ *
+ * created 01 September 2016
+ * modified 27 January 2017
+ * by Alvin Leonardo (alvin@lavorus.com)
+ */
+
 package com.lavorus.skripsi;
 
 import android.content.Intent;
-import android.net.wifi.WifiConfiguration;
-import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -20,7 +34,6 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.larswerkman.holocolorpicker.ColorPicker;
 import com.larswerkman.holocolorpicker.SVBar;
-import com.larswerkman.holocolorpicker.ValueBar;
 
 import org.json.JSONObject;
 

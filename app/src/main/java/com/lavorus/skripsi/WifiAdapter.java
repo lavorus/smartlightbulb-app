@@ -1,3 +1,21 @@
+/*
+ * Smart Light Bulb - Android App
+ * GNU GPLv3 License
+ *
+ * created 01 September 2016
+ * modified 27 January 2017
+ * by Alvin Leonardo (alvin@lavorus.com)
+ */
+
+/*
+ * Smart Light Bulb - Android App
+ * GNU GPLv3 License
+ *
+ * created 01 September 2016
+ * modified 27 January 2017
+ * by Alvin Leonardo (alvin@lavorus.com)
+ */
+
 package com.lavorus.skripsi;
 
 import android.app.Activity;
@@ -8,10 +26,6 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-
-/**
- * Created by Alvin on 11/5/16.
- */
 
 public class WifiAdapter extends BaseAdapter {
     private ArrayList<Wifi> data = new ArrayList<Wifi>();

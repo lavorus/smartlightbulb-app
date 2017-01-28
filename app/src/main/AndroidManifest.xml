@@ -1,4 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Smart Light Bulb - Android App
+  ~ GNU GPLv3 License
+  ~
+  ~ created 01 September 2016
+  ~ modified 27 January 2017
+  ~ by Alvin Leonardo (alvin@lavorus.com)
+  -->
+
+<!--
+  ~ Smart Light Bulb - Android App
+  ~ GNU GPLv3 License
+  ~
+  ~ created 01 September 2016
+  ~ modified 27 January 2017
+  ~ by Alvin Leonardo (alvin@lavorus.com)
+  -->
+
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.lavorus.skripsi">
 
